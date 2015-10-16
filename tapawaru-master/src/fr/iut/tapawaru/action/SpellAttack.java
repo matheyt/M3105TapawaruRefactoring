@@ -16,7 +16,7 @@ import fr.iut.tapawaru.team.Character;
  * @authors CEARD, MATHEY, MOUNIER, 
  * @authors PELLOUX-PRAYER, PRADELLE
  */
-public class Attack extends Spell
+public class SpellAttack extends Action
 {
 	/**
 	 * chooses a random type among the 4 adjacent glyphs
@@ -123,12 +123,12 @@ public class Attack extends Spell
 			{
 				if (deltaX > 0) //right
 				{
-					for (int x = caster.getCellTraveled().getPosition().getPositionX()+1,
-							 y = caster.getCellTraveled().getPosition().getPositionY();
-						 x < map.getXSize();
-						 x++)
+					for (int PosX = caster.getCellTraveled().getPosition().getPositionX()+1,
+							 PosY = caster.getCellTraveled().getPosition().getPositionY();
+						 PosX < map.getXSize();
+						 PosX++)
 					{
-						cellList.add(new CellPosition(x, y));
+						cellList.add(new CellPosition(PosX, PosY));
 					}
 				}
 				else	//left
@@ -233,28 +233,23 @@ public class Attack extends Spell
 				yTarget = target.getPositionY();
 			
 			x = xTarget; y = yTarget+1;
-			if (x >= 0 && y >= 0 &&
-				x < map.getXSize() && y < map.getYSize())
+			if (map.checkPosition(map, x, y))
 				cellList.add(new CellPosition(x, y));
 			
 			x = xTarget; y = yTarget-1;
-			if (x >= 0 && y >= 0 &&
-				x < map.getXSize() && y < map.getYSize())
+			if (map.checkPosition(map, x, y))
 				cellList.add(new CellPosition(x, y));
 			
 			x = xTarget+1; y = yTarget;
-			if (x >= 0 && y >= 0 &&
-				x < map.getXSize() && y < map.getYSize())
+			if (map.checkPosition(map, x, y))
 				cellList.add(new CellPosition(x, y));
 			
 			x = xTarget-1; y = yTarget;
-			if (x >= 0 && y >= 0 &&
-					x < map.getXSize() && y < map.getYSize())
+			if (map.checkPosition(map, x, y))
 				cellList.add(new CellPosition(x, y));
 			
 			x = xTarget; y = yTarget;
-			if (x >= 0 && y >= 0 &&
-				x < map.getXSize() && y < map.getYSize())
+			if (map.checkPosition(map, x, y))
 				cellList.add(new CellPosition(x, y));
 			
 			executeAttack(map, cellList, getAttackType(map, caster.getCellTraveled()));
@@ -265,4 +260,5 @@ public class Attack extends Spell
 
 		return cellList;
 	}
+
 }

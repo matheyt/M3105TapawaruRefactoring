@@ -238,6 +238,11 @@ public class Map
 		character.setCell(this.getCell(position));		
 	}
 	
+	public boolean checkPosition(Map map, int x, int y) {
+		return x >= 0 && y >= 0 &&
+			x < map.getXSize() && y < map.getYSize();
+	}
+	
 	/**
 	 * ToString override
 	 * Print the map with cells and glyphs

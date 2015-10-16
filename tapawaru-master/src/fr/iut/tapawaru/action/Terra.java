@@ -15,7 +15,7 @@ import fr.iut.tapawaru.team.Team;
  * @authors CEARD, MATHEY, MOUNIER,
  * @authors PELLOUX-PRAYER, PRADELLE
  */
-public class Terra extends Spell
+public class Terra extends Action
 {
 	
 	/**

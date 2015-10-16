@@ -13,7 +13,7 @@ import fr.iut.tapawaru.team.Character;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
-import fr.iut.tapawaru.action.Attack;
+import fr.iut.tapawaru.action.SpellAttack;
 import fr.iut.tapawaru.action.Move;
 import fr.iut.tapawaru.action.Terra;
 import fr.iut.tapawaru.map.CellPosition;
@@ -504,7 +504,7 @@ public class BottomPanel extends JPanel implements KeyListener
 					// TODO You must select before cast a spell
 				} else
 				{
-					Attack.laserBeam(this.map, this.characterSelected, this.map.getSelectedCell().getPosition(), true);
+					SpellAttack.laserBeam(this.map, this.characterSelected, this.map.getSelectedCell().getPosition(), true);
 					this.repaint();
 					this.mapGui.printCell(this.mapGui.getGraphics());
 					this.characterSelected = null;
@@ -523,7 +523,7 @@ public class BottomPanel extends JPanel implements KeyListener
 				break;
 						/* *****************************Flower Bomb******************* */
 			case 'd':
-					Attack.aroundCaster(this.map, this.characterSelected, true);
+					SpellAttack.aroundCaster(this.map, this.characterSelected, true);
 					this.repaint();
 					this.mapGui.printCell(this.mapGui.getGraphics());
 					this.characterSelected = null;
@@ -546,7 +546,7 @@ public class BottomPanel extends JPanel implements KeyListener
 					// TODO You must select before cast a spell
 				} else
 				{
-					Attack.flowerBomb(this.map, this.characterSelected, this.map.getSelectedCell().getPosition(), true);
+					SpellAttack.flowerBomb(this.map, this.characterSelected, this.map.getSelectedCell().getPosition(), true);
 					this.repaint();
 					this.mapGui.printCell(this.mapGui.getGraphics());
 					this.characterSelected = null;
