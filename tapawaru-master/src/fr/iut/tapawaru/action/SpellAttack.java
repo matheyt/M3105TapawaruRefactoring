@@ -35,33 +35,21 @@ public class SpellAttack extends Action
 			case HOLY:
 				for (CellPosition cellPos : posList)
 				{
-					if (map.getCharacter(cellPos.getPositionX(), cellPos.getPositionY()) != null)
-					{
-						map.getCharacter(cellPos.getPositionX(), cellPos.getPositionY()).heal(1);
-						map.getCharacter(cellPos.getPositionX(), cellPos.getPositionY()).setBuff(Buff.NORMAL);
-					}
+					holyAttack(map, cellPos);
 				}
 				break;
 				
 			case FIRE:
 				for (CellPosition cellPos : posList)
 				{
-					if (map.getCharacter(cellPos.getPositionX(), cellPos.getPositionY()) != null)
-					{
-						map.getCharacter(cellPos.getPositionX(), cellPos.getPositionY()).setBuff(Buff.BURNING);
-						map.getCharacter(cellPos.getPositionX(), cellPos.getPositionY()).inflict(2);
-					}
+					fireAttack(map, cellPos);
 				}
 				break;
 				
 			case ICE:
 				for (CellPosition cellPos : posList)
 				{
-					if (map.getCharacter(cellPos.getPositionX(), cellPos.getPositionY()) != null)
-					{
-						map.getCharacter(cellPos.getPositionX(), cellPos.getPositionY()).setBuff(Buff.FREEZING);
-						map.getCharacter(cellPos.getPositionX(), cellPos.getPositionY()).inflict(2);
-					}
+					iceAttack(map, cellPos);
 
 				}
 				break;
@@ -69,15 +57,7 @@ public class SpellAttack extends Action
 			case AIR:
 				for (CellPosition cellPos : posList)
 				{
-					if (map.getCharacter(cellPos.getPositionX(), cellPos.getPositionY()) != null)
-					{
-						Character pers = map.getCharacter(cellPos.getPositionX(), cellPos.getPositionY());
-						
-						if (pers.getBuff() == Buff.BURNING)
-							pers.setBuff(Buff.NORMAL);
-						
-						pers.inflict(1);
-					}
+					airAttack(map, cellPos);
 
 						
 				}
@@ -86,10 +66,7 @@ public class SpellAttack extends Action
 			default:
 				for (CellPosition cellPos : posList)
 				{
-					if (map.getCharacter(cellPos.getPositionX(), cellPos.getPositionY()) != null)
-					{
-						map.getCharacter(cellPos.getPositionX(), cellPos.getPositionY()).inflict(1);
-					}
+					normalAttack(map, cellPos);
 
 				}
 
@@ -99,6 +76,58 @@ public class SpellAttack extends Action
 		map.getTeamController().checkWin();
 
 	}
+
+
+	private static void normalAttack(Map map, CellPosition cellPos) {
+		if (map.getCharacter(cellPos.getPositionX(), cellPos.getPositionY()) != null)
+		{
+			map.getCharacter(cellPos.getPositionX(), cellPos.getPositionY()).inflict(1);
+		}
+	}
+
+
+	private static void airAttack(Map map, CellPosition cellPos) {
+		if (map.getCharacter(cellPos.getPositionX(), cellPos.getPositionY()) != null)
+		{
+			Character pers = map.getCharacter(cellPos.getPositionX(), cellPos.getPositionY());
+			
+			if (pers.getBuff() == Buff.BURNING)
+				pers.setBuff(Buff.NORMAL);
+			
+			pers.inflict(1);
+		}
+	}
+
+
+	private static void iceAttack(Map map, CellPosition cellPos) {
+		if (map.getCharacter(cellPos.getPositionX(), cellPos.getPositionY()) != null)
+		{
+			map.getCharacter(cellPos.getPositionX(), cellPos.getPositionY()).setBuff(Buff.FREEZING);
+			map.getCharacter(cellPos.getPositionX(), cellPos.getPositionY()).inflict(2);
+		}
+	}
+
+
+	private static void fireAttack(Map map, CellPosition cellPos) {
+		if (map.getCharacter(cellPos.getPositionX(), cellPos.getPositionY()) != null)
+		{
+			map.getCharacter(cellPos.getPositionX(), cellPos.getPositionY()).setBuff(Buff.BURNING);
+			map.getCharacter(cellPos.getPositionX(), cellPos.getPositionY()).inflict(2);
+		}
+	}
+
+
+	private static void holyAttack(Map map, CellPosition cellPos) {
+		if (map.getCharacter(cellPos.getPositionX(), cellPos.getPositionY()) != null)
+		{
+			map.getCharacter(cellPos.getPositionX(), cellPos.getPositionY()).heal(1);
+			map.getCharacter(cellPos.getPositionX(), cellPos.getPositionY()).setBuff(Buff.NORMAL);
+		}
+	}
+	
+	
+	
+	
 	
 	/**
 	 * laserBeam
@@ -113,6 +142,14 @@ public class SpellAttack extends Action
 	{
 		ArrayList<CellPosition> cellList = new ArrayList<CellPosition>();
 
+		laserBeamAttack(map, caster, target, cellList);
+		
+		return cellList;
+	}
+
+
+	private static void laserBeamAttack(Map map, Character caster, CellPosition target,
+			ArrayList<CellPosition> cellList) {
 		if (map.getTeamController().isDeductable(1))
 		{
 		
@@ -123,23 +160,11 @@ public class SpellAttack extends Action
 			{
 				if (deltaX > 0) //right
 				{
-					for (int PosX = caster.getCellTraveled().getPosition().getPositionX()+1,
-							 PosY = caster.getCellTraveled().getPosition().getPositionY();
-						 PosX < map.getXSize();
-						 PosX++)
-					{
-						cellList.add(new CellPosition(PosX, PosY));
-					}
+					selectRightCell(map, caster, cellList);
 				}
 				else	//left
 				{
-					for (int x = caster.getCellTraveled().getPosition().getPositionX()-1,
-						 	 y = caster.getCellTraveled().getPosition().getPositionY();
-						 x >= 0;
-						 x--)
-					{
-						cellList.add(new CellPosition(x, y));
-					}
+					selectLeftCell(caster, cellList);
 				}
 	
 			}
@@ -147,32 +172,66 @@ public class SpellAttack extends Action
 			{
 				if (deltaY > 0)	//down
 				{
-					for (int x = caster.getCellTraveled().getPosition().getPositionX(),
-						 	 y = caster.getCellTraveled().getPosition().getPositionY()+1;
-						 y < map.getYSize();
-						 y++)
-					{
-						cellList.add(new CellPosition(x, y));
-					}
+					selectDownCell(map, caster, cellList);
 				}
 				else	//up
 				{
-					for (int x = caster.getCellTraveled().getPosition().getPositionX(),
-						 	 y = caster.getCellTraveled().getPosition().getPositionY()-1;
-						 y >= 0;
-						 y--)
-					{
-						cellList.add(new CellPosition(x, y));
-					}
+					selectupCell(caster, cellList);
 				}
 			}
 			
 			executeAttack(map, cellList, getAttackType(map, caster.getCellTraveled()));
 			map.getTeamController().deduct(1);
 		}
-		
-		return cellList;
 	}
+
+
+	private static void selectupCell(Character caster, ArrayList<CellPosition> cellList) {
+		for (int x = caster.getCellTraveled().getPosition().getPositionX(),
+			 	 y = caster.getCellTraveled().getPosition().getPositionY()-1;
+			 y >= 0;
+			 y--)
+		{
+			cellList.add(new CellPosition(x, y));
+		}
+	}
+
+
+	private static void selectDownCell(Map map, Character caster, ArrayList<CellPosition> cellList) {
+		for (int x = caster.getCellTraveled().getPosition().getPositionX(),
+			 	 y = caster.getCellTraveled().getPosition().getPositionY()+1;
+			 y < map.getYSize();
+			 y++)
+		{
+			cellList.add(new CellPosition(x, y));
+		}
+	}
+
+
+	private static void selectLeftCell(Character caster, ArrayList<CellPosition> cellList) {
+		for (int x = caster.getCellTraveled().getPosition().getPositionX()-1,
+			 	 y = caster.getCellTraveled().getPosition().getPositionY();
+			 x >= 0;
+			 x--)
+		{
+			cellList.add(new CellPosition(x, y));
+		}
+	}
+
+
+	private static void selectRightCell(Map map, Character caster, ArrayList<CellPosition> cellList) {
+		for (int PosX = caster.getCellTraveled().getPosition().getPositionX()+1,
+				 PosY = caster.getCellTraveled().getPosition().getPositionY();
+			 PosX < map.getXSize();
+			 PosX++)
+		{
+			cellList.add(new CellPosition(PosX, PosY));
+		}
+	}
+	
+	
+	
+	
 	
 	/**
 	 * aroundCaster
@@ -187,30 +246,44 @@ public class SpellAttack extends Action
 
 		ArrayList<CellPosition> cellList = new ArrayList<CellPosition>();
 		
+		aroundCasterAttack(map, caster, cellList);
+
+
+		return cellList;
+	}
+
+
+	private static void aroundCasterAttack(Map map, Character caster, ArrayList<CellPosition> cellList) {
 		if (map.getTeamController().isDeductable(1))
 		{
 			int xCaster = caster.getCellTraveled().getPosition().getPositionX();
 			int yCaster = caster.getCellTraveled().getPosition().getPositionY();
 			
-			for (int y = yCaster - 1 ; y <= yCaster + 1 ; y++)
-			{
-				for (int x = xCaster - 1 ; x <= xCaster + 1 ; x++)
-				{
-					if ((x != xCaster || y != yCaster) &&
-						x >= 0 && y >= 0 &&
-						x < map.getXSize() && y < map.getYSize())
-						cellList.add(new CellPosition(x, y));
-				}
-			}
+			selectAroundCell(map, cellList, xCaster, yCaster);
 			
 			executeAttack(map, cellList, getAttackType(map, caster.getCellTraveled()));
 			map.getTeamController().deduct(1);
 
 		}
-
-
-		return cellList;
 	}
+
+
+	private static void selectAroundCell(Map map, ArrayList<CellPosition> cellList, int xCaster, int yCaster) {
+		for (int y = yCaster - 1 ; y <= yCaster + 1 ; y++)
+		{
+			for (int x = xCaster - 1 ; x <= xCaster + 1 ; x++)
+			{
+				if ((x != xCaster || y != yCaster) &&
+					x >= 0 && y >= 0 &&
+					x < map.getXSize() && y < map.getYSize())
+					cellList.add(new CellPosition(x, y));
+			}
+		}
+	}
+
+	
+	
+	
 	
 	/**
 	 * flowerBomb
@@ -228,29 +301,7 @@ public class SpellAttack extends Action
 		
 		if (map.getTeamController().isDeductable(1))
 		{
-			int x, y,
-				xTarget = target.getPositionX(),
-				yTarget = target.getPositionY();
-			
-			x = xTarget; y = yTarget+1;
-			if (map.checkPosition(map, x, y))
-				cellList.add(new CellPosition(x, y));
-			
-			x = xTarget; y = yTarget-1;
-			if (map.checkPosition(map, x, y))
-				cellList.add(new CellPosition(x, y));
-			
-			x = xTarget+1; y = yTarget;
-			if (map.checkPosition(map, x, y))
-				cellList.add(new CellPosition(x, y));
-			
-			x = xTarget-1; y = yTarget;
-			if (map.checkPosition(map, x, y))
-				cellList.add(new CellPosition(x, y));
-			
-			x = xTarget; y = yTarget;
-			if (map.checkPosition(map, x, y))
-				cellList.add(new CellPosition(x, y));
+			flowerBonbSelectCell(map, target, cellList);
 			
 			executeAttack(map, cellList, getAttackType(map, caster.getCellTraveled()));
 			map.getTeamController().deduct(1);
@@ -259,6 +310,33 @@ public class SpellAttack extends Action
 
 
 		return cellList;
+	}
+
+
+	private static void flowerBonbSelectCell(Map map, CellPosition target, ArrayList<CellPosition> cellList) {
+		int x, y,
+			xTarget = target.getPositionX(),
+			yTarget = target.getPositionY();
+		
+		x = xTarget; y = yTarget+1;
+		if (map.checkPosition(map, x, y))
+			cellList.add(new CellPosition(x, y));
+		
+		x = xTarget; y = yTarget-1;
+		if (map.checkPosition(map, x, y))
+			cellList.add(new CellPosition(x, y));
+		
+		x = xTarget+1; y = yTarget;
+		if (map.checkPosition(map, x, y))
+			cellList.add(new CellPosition(x, y));
+		
+		x = xTarget-1; y = yTarget;
+		if (map.checkPosition(map, x, y))
+			cellList.add(new CellPosition(x, y));
+		
+		x = xTarget; y = yTarget;
+		if (map.checkPosition(map, x, y))
+			cellList.add(new CellPosition(x, y));
 	}
 
 }
